@@ -4,7 +4,7 @@
 public class Collatz {
 
     /** Buggy implementation of nextNumber! */
-    public static int nextNumber(int n) {
+    public static int nextNumber(int n) {// if the number is odd, it will return 3 * number + 1. If the number is even, it will return number/2
         if (n % 2 != 0) {
             return 3 * n + 1 ;
         }
