@@ -127,25 +127,25 @@ public class Model extends Observable {
                 if (board.tile(i, j) != null) {
                     object = board.tile(i, j).value();
                 }
-            if (object != 0) {
-                for (record = j + 1; record < bottom; record++) {
-                    if (board.tile(i, record) != null) {
-                        if (object == board.tile(i, record).value()) {
+                if (object != 0) {
+                    for (record = j + 1; record < bottom; record++) {
+                        if (board.tile(i, record) != null) {
+                            if (object == board.tile(i, record).value()) {
+                                board.move(i, record, board.tile(i, j));
+                                score += 2 * object;
+                                changed = true;
+                                bottom = record;
+                                break;
+                            } else {
+                                board.move(i, record - 1, board.tile(i, j));
+                                changed = true;
+                                break;
+                            }
+                        } else if (record == bottom - 1) {
                             board.move(i, record, board.tile(i, j));
-                            score += 2 * object;
-                            changed = true;
-                            bottom = record;
-                            break;
-                        } else {
-                            board.move(i, record - 1, board.tile(i, j));
                             changed = true;
                             break;
                         }
-                    } else if (record == bottom - 1) {
-                        board.move(i, record, board.tile(i, j));
-                        changed = true;
-                        break;
-                    }
                     }
                 }
             }
