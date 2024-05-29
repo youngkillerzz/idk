@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author youngkillerzz
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -109,14 +109,55 @@ public class Model extends Observable {
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
-
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        // Change the score.
+        //change changed variable to true if the tile moves.
+        if (side != Side.NORTH) {
+            this.board.setViewingPerspective(side);
+        }
 
-        checkGameOver();
-        if (changed) {
-            setChanged();
+        int i, j,  record;
+        for (i = 0; i < this.size(); i++) {
+            int bottom = this.size();
+
+            for (j = this.size() - 2; j >= 0; j--) {
+                int object = 0;
+                if (board.tile(i, j) != null) {
+                    object = board.tile(i, j).value();
+                }
+            if (object != 0) {
+                for (record = j + 1; record < bottom; record++) {
+                    if (board.tile(i, record) != null) {
+                        if (object == board.tile(i, record).value()) {
+                            board.move(i, record, board.tile(i, j));
+                            score += 2 * object;
+                            changed = true;
+                            bottom = record;
+                            break;
+                        } else {
+                            board.move(i, record - 1, board.tile(i, j));
+                            changed = true;
+                            break;
+                        }
+                    } else if (record == bottom - 1) {
+                        board.move(i, record, board.tile(i, j));
+                        changed = true;
+                        break;
+                    }
+                    }
+                }
+            }
+
+
+            if (side != Side.NORTH)
+                board.setViewingPerspective(Side.NORTH);
+            checkGameOver();
+            if (changed) {
+                setChanged();
+            }
+
         }
         return changed;
     }
@@ -136,18 +177,50 @@ public class Model extends Observable {
     /** Returns true if at least one space on the Board is empty.
      *  Empty spaces are stored as null.
      * */
+
+
+    /** For myself: The function EMPTYSPACEEXISTS's argument gives us "Board b", I can actually take advantage of that.
+     * And the board is a 4x4 grid. So I come up with an idea to use for loop. As the col and row variable all the way straight up,
+     * it iterates all corners that the board contains.
+     * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        for (int col = 0 ; col < b.size(); col++) {
+            for (int row = 0 ; row < b.size(); row++) {
+                if (b.tile(col, row) == null) {
+                    return true;
+                }
+
+            }
+
+        }
         return false;
     }
+
 
     /**
      * Returns true if any tile is equal to the maximum valid value.
      * Maximum valid value is given by MAX_PIECE. Note that
      * given a Tile object t, we get its value with t.value().
      */
+    /**
+     * For me: if I directly write code"if((b.tile(col, row).value()== MAX_PIECE),
+     * then the result will definitely go wrong because it may have null value.
+     * null.value()is invalid because it will lead to NullPointerException.
+     * */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for (int col = 0 ; col < b.size(); col++) {
+            for (int row = 0 ; row < b.size(); row++) {
+                int ValueForBTile = 0;
+                if (b.tile(col, row)!= null) {
+                    ValueForBTile = b.tile(col, row).value();
+                }
+                if (ValueForBTile == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -159,10 +232,26 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+    if(emptySpaceExists(b)) {
+        return true;
+    }
+    for(int col = 0;col<b.size()-1;col++){
+        for(int row = 0; row<b.size(); row++){
+            if(b.tile(col, row).value() == b.tile(col+1 , row).value()){
+                return true;
+            }
+
+            }
+        }
+    for (int col = 0; col<b.size();col++){
+        for (int row =0; row<b.size()-1;row++){
+            if(b.tile(col,row).value()==b.tile(col, row+1).value()){
+                return true;
+            }
+        }
+    }
         return false;
     }
-
-
     @Override
      /** Returns the model as a string, used for debugging. */
     public String toString() {
